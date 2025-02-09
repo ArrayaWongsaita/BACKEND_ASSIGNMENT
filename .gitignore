@@ -1,0 +1,13 @@
+// git ignore file for the project express
+node_modules
+dist
+build
+*.log
+*.pid
+*.seed
+*.cookie
+*.session
+.env
+.env.*
+npm-debug.log*
+pnpm-debug.log*
