@@ -7,7 +7,8 @@
 | **Authentication** |                              |                                   |        |
 | POST               | `/auth/register/doctor`      | ลงทะเบียนแพทย์                    | Public |
 | POST               | `/auth/register/user`        | ลงทะเบียนผู้ป่วย                  | Public |
-| POST               | `/auth/login`                | เข้าสู่ระบบ                       | Public |
+| POST               | `/auth/login/doctor`         | เข้าสู่ระบบแพทย์                  | Public |
+| POST               | `/auth/login/user`           | เข้าสู่ระบบผู้ป่วย                | Public |
 | **Users**          |                              |                                   |        |
 | GET                | `/users/me`                  | ดูข้อมูลตัวเอง                    | User   |
 | PUT                | `/users/me`                  | แก้ไขข้อมูลตัวเอง                 | User   |
@@ -61,10 +62,10 @@ POST /auth/register/user
 }
 ```
 
-### Login (Doctor/User)
+### Login Doctor
 
 ```http
-POST /auth/login
+POST /auth/login/doctor
 ```
 
 **Request Body**
@@ -72,12 +73,106 @@ POST /auth/login
 ```json
 {
   "username": "string",
-  "password": "string",
-  "role": "doctor" | "user"
+  "password": "string"
 }
 ```
 
-## 👤 User Management
+**Response**
+
+```json
+{
+  "success": true,
+  "token": "string",
+  "doctor": {
+    "id": "number",
+    "username": "string",
+    "specialization": "string"
+  }
+}
+```
+
+### Login User
+
+```http
+POST /auth/login/user
+```
+
+**Request Body**
+
+```json
+{
+  "username": "string",
+  "password": "string"
+}
+```
+
+**Response**
+
+```json
+{
+  "success": true,
+  "token": "string",
+  "user": {
+    "id": "number",
+    "username": "string"
+  }
+}
+```
+
+## 🔐 Authentication Implementation Options
+
+### การแยก Login Endpoints
+
+ระบบใช้ **Separate Login Endpoints** สำหรับ Doctor และ User (`/auth/login/doctor` และ `/auth/login/user`)
+
+### 💡 Implementation Options
+
+สามารถ implement authentication ได้หลายวิธี เช่น:
+
+#### วิธีที่ 1: แยก Secret Key
+
+```env
+JWT_SECRET_DOCTOR=doctor-secret-key-here
+JWT_SECRET_USER=user-secret-key-here
+```
+
+#### วิธีที่ 2: เพิ่ม Role ใน JWT Payload
+
+```json
+{
+  "userId": "number",
+  "username": "string",
+  "role": "doctor" | "user",
+  "iat": "timestamp",
+  "exp": "timestamp"
+}
+```
+
+#### วิธีที่ 3: แยก Database Tables
+
+- Doctor login → ค้นหาใน `Doctor` table
+- User login → ค้นหาใน `User` table
+
+#### วิธีที่ 4: เพิ่ม Additional Claims
+
+```json
+// Doctor Token
+{
+  "userId": 1,
+  "role": "doctor",
+  "specialization": "string",
+  "permissions": ["read_notes", "write_notes"]
+}
+
+// User Token
+{
+  "userId": 15,
+  "role": "user",
+  "permissions": ["read_own_records", "write_own_records"]
+}
+```
+
+## �👤 User Management
 
 ### Get User Profile
 
