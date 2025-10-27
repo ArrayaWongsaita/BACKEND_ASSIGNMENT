@@ -149,30 +149,6 @@ JWT_SECRET_USER=user-secret-key-here
 }
 ```
 
-#### วิธีที่ 3: แยก Database Tables
-
-- Doctor login → ค้นหาใน `Doctor` table
-- User login → ค้นหาใน `User` table
-
-#### วิธีที่ 4: เพิ่ม Additional Claims
-
-```json
-// Doctor Token
-{
-  "userId": 1,
-  "role": "doctor",
-  "specialization": "string",
-  "permissions": ["read_notes", "write_notes"]
-}
-
-// User Token
-{
-  "userId": 15,
-  "role": "user",
-  "permissions": ["read_own_records", "write_own_records"]
-}
-```
-
 ## �👤 User Management
 
 ### 5. Get User Profile
